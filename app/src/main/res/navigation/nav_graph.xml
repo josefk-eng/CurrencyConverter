@@ -6,9 +6,9 @@
     app:startDestination="@id/home2">
     <fragment
         android:id="@+id/home2"
-        android:name="com.josef.currency.ui.screens.Home"
+        android:name="com.josef.currency.presentation.converter.ConvertScreen"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_converter" >
         <action
             android:id="@+id/action_home2_to_details"
             app:destination="@id/details" />
