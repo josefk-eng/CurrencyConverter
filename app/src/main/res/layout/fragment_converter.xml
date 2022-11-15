@@ -41,6 +41,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    android:clickable="@{!viewModel.converterState.inProgress}"
+                    android:onItemSelected="@{(parent,view,pos,id) -> viewModel.convert(pos,viewModel.converterState.selected_to)}"
                     android:entries="@{viewModel.converterState.currencies}"
                     android:selectedItemPosition="@={viewModel.converterState.selected_from}"
                     />
@@ -53,6 +55,7 @@
             <ImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:clickable="@{!viewModel.converterState.inProgress}"
                 android:src="@drawable/double_arrow"
                 android:layout_weight="1" />
 
@@ -75,12 +78,83 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    android:clickable="@{!viewModel.converterState.inProgress}"
+                    android:onItemSelected="@{(parent,view,pos,id) -> viewModel.convert(viewModel.converterState.selected_from,pos)}"
                     android:entries="@{viewModel.converterState.currencies}"
                     android:selectedItemPosition="@={viewModel.converterState.selected_to}"
                     />
             </LinearLayout>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/amounts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:weightSum="6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/currencies">
+
+            <EditText
+                android:id="@+id/from_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:enabled="@{!viewModel.converterState.inProgress}"
+                android:text="@={viewModel.converterState.fromAmount}"
+                android:layout_weight="2" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:visibility="@{ viewModel.converterState.inProgress ? View.GONE : View.VISIBLE}"
+                android:layout_weight="2" />
+
+            <ProgressBar
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="@{ viewModel.converterState.inProgress ? View.VISIBLE : View.GONE}"
+                android:layout_weight="2" />
+
+            <EditText
+                android:id="@+id/to_amount"
+                android:layout_width="0dp"
+                android:inputType="numberDecimal"
+                android:enabled="@{!viewModel.converterState.inProgress}"
+                android:text="@={viewModel.converterState.toAmount}"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/details"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Details"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amounts" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="@{viewModel.converterState.error}"
+            android:textAlignment="center"
+            android:textColor="@color/error"
+            tools:text="Error"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

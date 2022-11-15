@@ -20,15 +20,54 @@ class ConverterViewModel @Inject constructor(private val convertUseCases: Conver
     }
 
     private fun fetchSymbol(){
+        setInProgress()
         viewModelScope.launch {
             convertUseCases.fetchSymbols{resultMap, exception ->
+                exception?.let {
+                    converterState.value = _converterState.value.copy(
+                        error = it.message ?: "Something wrong has occurred",
+                        inProgress = false
+                    )
+                }
                 converterState.value = _converterState.value.copy(
-                    currencies = resultMap.toList().map { it.first }
+                    currencies = resultMap.toList().map { it.first },
+                    error = "",
+                    inProgress = false
                 )
             }
         }
     }
 
+    fun convert(fromPos:Int, toPos:Int){
+        setInProgress()
+        viewModelScope.launch {
+            convertUseCases.convert(
+                converterState.value.fromAmount,
+                converterState.value.currencies[fromPos],
+                converterState.value.currencies[toPos],
+                ""){response, exception->
+                exception?.let {
+                    converterState.value = _converterState.value.copy(
+                        error = it.message ?: "Something wrong has occurred",
+                        inProgress = false
+                    )
+                }
+                response?.let {
+                    val conversion = it.info.rate * converterState.value.fromAmount.toDouble()
+                    converterState.value = _converterState.value.copy(
+                        toAmount = "$conversion",
+                        error = "",
+                        inProgress = false
+                    )
+                }
+            }
+        }
+    }
+    private fun setInProgress(){
+        converterState.value = _converterState.value.copy(
+            inProgress = true
+        )
+    }
 }
 
 
@@ -38,5 +77,7 @@ data class ConverterState(
     var selected_to:Int = 0,
     var selected_from:Int = 0,
     var fromAmount:String = "1",
-    var ToAmount:String = "0.0"
+    var toAmount:String = "1.0",
+    var error:String = "",
+    var inProgress:Boolean = false
 )
