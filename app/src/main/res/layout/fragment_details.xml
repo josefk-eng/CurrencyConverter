@@ -1,14 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.screens.Details">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.josef.currency.presentation.historicalRates.HistoricalViewModel" />
+        
+        <variable
+            name="adapter"
+            type="com.josef.currency.presentation.historicalRates.HistoricalAdapter" />
+
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical"
+        android:weightSum="6"
+        android:padding="16dp"
+        tools:context=".presentation.historicalRates.Details">
 
-</FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:weightSum="2">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:text="Historical List"
+                    android:textAlignment="center" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/histData"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_above="@+id/err"
+                    android:layout_below="@+id/title"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:setAdapter="@{adapter}"
+                    app:submitList="@{viewModel.historicState.data}"
+                    tools:listitem="@layout/history_item" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true"
+                    android:visibility="@{viewModel.historicState.dataLoading ? View.VISIBLE : View.GONE}" />
+
+                <TextView
+                    android:id="@+id/err"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:textAlignment="center"
+                    android:textColor="@color/error"
+                    android:text="@{viewModel.historicState.error}"
+                    tools:text = "Error"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -19,12 +20,17 @@ import javax.inject.Singleton
 @Module
 object DataModule {
 
+    private val interceptor = HttpLoggingInterceptor()
+
     @Provides
     @Singleton
     fun providesRemoteInterface(): RemoteInterface {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
-            .client(OkHttpClient.Builder().addInterceptor(HeaderInterceptor()).build())
+            .client(OkHttpClient.Builder()
+                .addInterceptor(HeaderInterceptor())
+                .addInterceptor(interceptor.setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build())
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create())
             .build().create(RemoteInterface::class.java)

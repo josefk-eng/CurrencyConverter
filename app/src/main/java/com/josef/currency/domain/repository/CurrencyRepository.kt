@@ -11,4 +11,5 @@ interface CurrencyRepository {
         to:String,
         date:String
     ):ResponseWrapper
+    suspend fun getHistoricalRates(start_date:String, end_date:String): ResponseWrapper
 }

@@ -12,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.josef.currency.R
 import com.josef.currency.core.utils.afterTextChanged
 import com.josef.currency.databinding.FragmentConverterBinding
@@ -45,6 +46,9 @@ class ConvertScreen : Fragment() {
         binding.toAmount.onFocusChangeListener = View.OnFocusChangeListener { v, focus -> viewModel.onEvent(ConverterEvent.OnToFocusedChanged(focus)) }
         binding.swap.setOnClickListener { viewModel.onEvent(ConverterEvent.OnSwap) }
         binding.tryAgain.setOnClickListener { viewModel.onEvent(ConverterEvent.OnReTry)}
+        binding.details.setOnClickListener{
+            findNavController().navigate(R.id.details)
+        }
         return binding.root
     }
 
