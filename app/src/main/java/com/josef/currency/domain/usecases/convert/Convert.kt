@@ -1,5 +1,6 @@
 package com.josef.currency.domain.usecases.convert
 
+import com.josef.currency.domain.currentDate
 import com.josef.currency.domain.modals.converter.ConvertResponse
 import com.josef.currency.domain.modals.wrappers.ResponseWrapper
 import com.josef.currency.domain.repository.CurrencyRepository
@@ -10,10 +11,9 @@ class Convert(private val repository: CurrencyRepository) {
         amount:String,
         from:String,
         to:String,
-        date:String,
         result: (ConvertResponse?, Exception?)->Unit
     ){
-        val response = repository.convert(amount, from, to, date)
+        val response = repository.convert(amount, from, to, currentDate("YYYY-MM-DD"))
         response.error?.let {
             result(null,it)
         }

@@ -1,12 +1,15 @@
 package com.josef.currency.core.utils
 
+import android.icu.text.SimpleDateFormat
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.DateUtils
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 import kotlin.math.absoluteValue
 
 fun JSONObject.toMap(): Map<String, Any?> = keys().asSequence().associateWith {
@@ -38,4 +41,7 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         }
     })
 }
+
+
+
 

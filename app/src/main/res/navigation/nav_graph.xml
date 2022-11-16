@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/details"
-        android:name="com.josef.currency.ui.screens.Details"
+        android:name="com.josef.currency.presentation.historicalRates.Details"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details" />
 </navigation>

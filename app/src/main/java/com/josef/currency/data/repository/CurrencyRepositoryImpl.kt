@@ -40,4 +40,19 @@ class CurrencyRepositoryImpl @Inject constructor(private val remote:RemoteInterf
             ResponseWrapper(error = e)
         }
     }
+
+    override suspend fun getHistoricalRates(start_date:String, end_date:String):ResponseWrapper {
+        val map: Map<String,Any?>?
+        return  try {
+            val response = remote.getHistoricalRates(start_date, end_date)
+            map = JSONObject(response).toMap()
+            if (map["success"] as Boolean){
+                ResponseWrapper(response = map["rates"])
+            }else{
+                ResponseWrapper(error = Exception("Request was not Successful"))
+            }
+        }catch (e:Exception){
+            ResponseWrapper(error = e)
+        }
+    }
 }

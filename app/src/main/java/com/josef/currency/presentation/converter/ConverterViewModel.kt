@@ -48,7 +48,6 @@ class ConverterViewModel @Inject constructor(private val convertUseCases: Conver
                 amount,
                 fromCurrency,
                 toCurrency,
-                ""
             ) { response, exception ->
                 exception?.let {
                     converterState.value = _converterState.value.copy(
