@@ -1,6 +1,8 @@
 package com.josef.currency.presentation.converter
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.josef.currency.R
+import com.josef.currency.core.utils.afterTextChanged
 import com.josef.currency.databinding.FragmentConverterBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,16 +35,17 @@ class ConvertScreen : Fragment() {
         val viewModel:ConverterViewModel by viewModels()
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.from.onItemSelectedListener = object: OnItemSelectedListener{
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                Toast.makeText(context,"$p2", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-
+        binding.fromAmount.afterTextChanged { amount->
+            viewModel.onEvent(ConverterEvent.OnFromAmountChanged(amount))
         }
+        binding.toAmount.afterTextChanged { amount->
+            viewModel.onEvent(ConverterEvent.OnToAmountChanged(amount))
+        }
+        binding.fromAmount.onFocusChangeListener = View.OnFocusChangeListener { v, focus -> viewModel.onEvent(ConverterEvent.OnFromFocusedChanged(focus)) }
+        binding.toAmount.onFocusChangeListener = View.OnFocusChangeListener { v, focus -> viewModel.onEvent(ConverterEvent.OnToFocusedChanged(focus)) }
+        binding.swap.setOnClickListener { viewModel.onEvent(ConverterEvent.OnSwap) }
+        binding.tryAgain.setOnClickListener { viewModel.onEvent(ConverterEvent.OnReTry)}
         return binding.root
     }
+
 }
