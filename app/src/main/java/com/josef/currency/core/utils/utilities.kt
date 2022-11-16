@@ -1,7 +1,13 @@
 package com.josef.currency.core.utils
 
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.widget.EditText
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.absoluteValue
 
 fun JSONObject.toMap(): Map<String, Any?> = keys().asSequence().associateWith {
     when (val value = this[it])
@@ -17,3 +23,19 @@ fun JSONObject.toMap(): Map<String, Any?> = keys().asSequence().associateWith {
         else            -> value
     }
 }
+
+fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+    this.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        }
+
+        override fun afterTextChanged(editable: Editable?) {
+            afterTextChanged.invoke(editable.toString())
+        }
+    })
+}
+

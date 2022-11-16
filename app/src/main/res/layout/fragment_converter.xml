@@ -10,6 +10,7 @@
             type="com.josef.currency.presentation.converter.ConverterViewModel" />
     </data>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,10 +20,11 @@
         <LinearLayout
             android:id="@+id/currencies"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -41,8 +43,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:clickable="@{!viewModel.converterState.inProgress}"
-                    android:onItemSelected="@{(parent,view,pos,id) -> viewModel.convert(pos,viewModel.converterState.selected_to)}"
                     android:entries="@{viewModel.converterState.currencies}"
                     android:selectedItemPosition="@={viewModel.converterState.selected_from}"
                     />
@@ -53,9 +53,18 @@
                 android:layout_weight="0.5" />
 
             <ImageButton
+                android:id="@+id/swap"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:clickable="@{!viewModel.converterState.inProgress}"
+                android:visibility="@{!viewModel.converterState.loadingCurrencies ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/double_arrow"
+                android:layout_weight="1" />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/indicator"
+                android:layout_width="0dp"
+                android:indeterminate="true"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.converterState.loadingCurrencies ? View.VISIBLE : View.GONE}"
                 android:src="@drawable/double_arrow"
                 android:layout_weight="1" />
 
@@ -78,8 +87,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:clickable="@{!viewModel.converterState.inProgress}"
-                    android:onItemSelected="@{(parent,view,pos,id) -> viewModel.convert(viewModel.converterState.selected_from,pos)}"
                     android:entries="@{viewModel.converterState.currencies}"
                     android:selectedItemPosition="@={viewModel.converterState.selected_to}"
                     />
@@ -100,36 +107,49 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/currencies">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical">
             <EditText
                 android:id="@+id/from_amount"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:enabled="@{!viewModel.converterState.inProgress}"
-                android:text="@={viewModel.converterState.fromAmount}"
-                android:layout_weight="2" />
+                android:text="@={viewModel.converterState.fromAmount}" />
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:layout_width="match_parent"
+                app:indicatorColor="@color/white"
+                android:paddingHorizontal="16dp"
+                android:indeterminate="true"
+                android:visibility="@{(viewModel.converterState.inProgress &amp;&amp; !viewModel.converterState.from_to) ? View.VISIBLE : View.GONE}"
+                android:layout_height="1dp"/>
+        </LinearLayout>
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:visibility="@{ viewModel.converterState.inProgress ? View.GONE : View.VISIBLE}"
                 android:layout_weight="2" />
-
-            <ProgressBar
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="@{ viewModel.converterState.inProgress ? View.VISIBLE : View.GONE}"
-                android:layout_weight="2" />
-
-            <EditText
-                android:id="@+id/to_amount"
-                android:layout_width="0dp"
-                android:inputType="numberDecimal"
-                android:enabled="@{!viewModel.converterState.inProgress}"
-                android:text="@={viewModel.converterState.toAmount}"
-                android:layout_height="wrap_content"
-                android:layout_weight="2" />
-
+                android:layout_weight="2"
+                android:orientation="vertical">
+                <EditText
+                    android:id="@+id/to_amount"
+                    android:layout_width="match_parent"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewModel.converterState.toAmount}"
+                    android:layout_height="wrap_content" />
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="match_parent"
+                    app:indicatorColor="@color/white"
+                    android:paddingHorizontal="16dp"
+                    android:indeterminate="true"
+                    android:visibility="@{(viewModel.converterState.inProgress &amp;&amp; viewModel.converterState.from_to) ? View.VISIBLE : View.GONE}"
+                    android:layout_height="1dp"/>
+            </LinearLayout>
         </LinearLayout>
 
         <Button
@@ -142,19 +162,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/amounts" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
-            android:text="@{viewModel.converterState.error}"
-            android:textAlignment="center"
-            android:textColor="@color/error"
-            tools:text="Error"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details" />
+            app:layout_constraintTop_toBottomOf="@+id/details"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.converterState.error}"
+                android:textAlignment="center"
+                android:textColor="@color/error"
+                tools:text="Error" />
+            <Button
+                android:id="@+id/try_again"
+                android:layout_width="wrap_content"
+                android:visibility="@{viewModel.converterState.error.empty ? View.GONE : View.VISIBLE}"
+                android:layout_height="wrap_content"
+                android:text="Try Again"/>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+
+
+<!--    android:onItemSelected="@{(parent,view,pos,id) -> viewModel.convert(pos,viewModel.converterState.selected_to, 0L)}"-->
